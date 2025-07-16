@@ -188,39 +188,32 @@ async function initializeApp() {
 
 // Setup webcam
 async function setupWebcam() {
-  async function setupWebcam() {
-    try {
-      const flip = false;  // 外カメなら反転不要
-  
-      // まず「裏面カメラだけ」にトライ
-      try {
-        await webcam.setup({
-          video: { facingMode: { exact: "environment" } }, 
-          audio: false
-        });
-      } catch (e1) {
-        console.warn("裏面カメ指定で失敗したので前面カメで再トライ:", e1);
-        // 裏面がダメなら制約なしで getUserMedia
-        await webcam.setup({ video: true, audio: false });
-      }
-  
-      await webcam.play();
-      webcamPlaceholder.style.display = "none";
-      webcamContainer.appendChild(webcam.canvas);
-      detectBtn.disabled = false;
-      window.requestAnimationFrame(loop);
-  
-    } catch (err) {
-      console.error("Error setting up webcam:", err);
-      // ここに来たら完全にカメラ非対応とみなしてフォールバック描画
-      webcamPlaceholder.innerHTML = `
-        <div class="text-center">
-          <p class="text-yellow-600 font-medium">Camera not available</p>
-          <p class="text-sm text-gray-500 mt-2">Please use photo upload instead</p>
-        </div>`;
-    }
+  webcam = new tmImage.Webcam(300, 300, false);
+
+  // １）裏面カメラ厳格指定
+  try {
+    webcam = new tmImage.Webcam(300, 300, false, {
+      video: { facingMode: { exact: "environment" } },
+      audio: false
+    });
+    await webcam.setup();
+  } catch (e) {
+    console.warn("environment モード失敗→デフォルトカメラで再トライ", e);
+    // ２）制約なしで fallback
+    webcam = new tmImage.Webcam(300, 300, false, {
+      video: true,
+      audio: false
+    });
+    await webcam.setup();
   }
+
+  await webcam.play();
+  webcamPlaceholder.style.display = "none";
+  webcamContainer.appendChild(webcam.canvas);
+  detectBtn.disabled = false;
+  window.requestAnimationFrame(loop);
 }
+
 
 // Webcam loop
 async function loop() {

@@ -191,7 +191,7 @@ async function setupWebcam() {
     try {
         const flip = true;
         webcam = new tmImage.Webcam(300, 300, flip);
-        await webcam.setup();
+        await webcam.setup({ facingMode: { ideal: "environment" } });
         await webcam.play();
         
         // Remove placeholder and add webcam canvas

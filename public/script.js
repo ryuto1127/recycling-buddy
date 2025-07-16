@@ -188,32 +188,38 @@ async function initializeApp() {
 
 // Setup webcam
 async function setupWebcam() {
-  webcam = new tmImage.Webcam(300, 300, false);
-
-  // １）裏面カメラ厳格指定
-  try {
-    webcam = new tmImage.Webcam(300, 300, false, {
-      video: { facingMode: { exact: "environment" } },
-      audio: false
-    });
-    await webcam.setup();
-  } catch (e) {
-    console.warn("environment モード失敗→デフォルトカメラで再トライ", e);
-    // ２）制約なしで fallback
-    webcam = new tmImage.Webcam(300, 300, false, {
-      video: true,
-      audio: false
-    });
-    await webcam.setup();
-  }
-
-  await webcam.play();
-  webcamPlaceholder.style.display = "none";
-  webcamContainer.appendChild(webcam.canvas);
-  detectBtn.disabled = false;
-  window.requestAnimationFrame(loop);
+    try {
+        const flip = true;
+        webcam = new tmImage.Webcam(300, 300, flip);
+        await webcam.setup();
+        await webcam.play();
+        
+        // Remove placeholder and add webcam canvas
+        webcamPlaceholder.style.display = 'none';
+        webcamContainer.appendChild(webcam.canvas);
+        
+        // Start the webcam loop
+        window.requestAnimationFrame(loop);
+        
+        // Enable detect button
+        detectBtn.disabled = false;
+        
+    } catch (error) {
+        console.error('Error setting up webcam:', error);
+        webcamPlaceholder.innerHTML = `
+            <div class="text-center">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+                <p class="text-yellow-600 font-medium">Camera not available</p>
+                <p class="text-sm text-gray-500 mt-2">Please use photo upload instead</p>
+            </div>
+        `;
+    }
 }
-
 
 // Webcam loop
 async function loop() {

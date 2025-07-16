@@ -41,12 +41,12 @@ const binMapping = {
     tip: "Paper is highly recyclable—keep it clean and dry."
   },
   "paper_cups": {
-    bin: "Blue (clean) ♻️ / Green (soiled) 🥬",
-    tip: "Clean paper cups go in Blue Bin. Food-soiled cups go in Green Bin. Coffee cups may have lining—rinse or check locally."
+    bin: "Black Bin 🗑️",
+    tip: "Paper cups are lined with plastic—non-recyclable."
   },
   "plastic_cup_lids": {
-    bin: "Blue Bin ♻️",
-    tip: "Rinse plastic lids before recycling to reduce contamination."
+    bin: "Black Bin 🗑️",
+    tip: "Small pieces are hard to sort."
   },
   "plastic_detergent_bottles": {
     bin: "Blue Bin ♻️",
@@ -85,8 +85,8 @@ const binMapping = {
     tip: "All food scraps including meat, bones, and dairy go in Green Bin. Banned from garbage since 2015."
   },
   "aerosol_cans": {
-    bin: "Black Bin 🗑️",
-    tip: "Empty aerosol cans go to garbage unless your local depot accepts empties."
+    bin: "Blue Bin ♻️",
+    tip: "Empty completely before disposing."
   },
   "clothing": {
     bin: "Black Bin 🗑️ (or donate 👕)",
@@ -353,9 +353,14 @@ function displayResults(predictions) {
         predictionResults.appendChild(containerDiv);
     });
     
-    // Get bin recommendation for top prediction
+    // 空白をアンダースコアに置き換えてキーを作成
     const topPrediction = predictions[0];
-    const binInfo = binMapping[topPrediction.className];
+    const key = topPrediction.className.replace(/\s+/g, '_');
+    // もし大文字小文字にブレがあるなら .toLowerCase() も追加すると安全です
+    // const key = topPrediction.className.toLowerCase().replace(/\s+/g, '_');
+
+    const binInfo = binMapping[key];
+
     
     if (binInfo) {
         // Display bin recommendation

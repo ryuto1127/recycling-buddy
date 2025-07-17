@@ -165,7 +165,7 @@ async function initializeApp() {
         console.log('Number of classes:', maxPredictions);
         
         // Setup webcam
-        await setupWebcam();
+        //await setupWebcam();
         
     } catch (error) {
         console.error('Error loading model:', error);
@@ -187,7 +187,7 @@ async function initializeApp() {
 }
 
 // Setup webcam
-async function setupWebcam() {
+/*async function setupWebcam() {
     try {
         const flip = true;
         webcam = new tmImage.Webcam(300, 300, flip);
@@ -228,7 +228,7 @@ async function loop() {
         window.requestAnimationFrame(loop);
     }
 }
-
+*/
 // Handle file upload
 function handleFileUpload(event) {
     const file = event.target.files[0];
@@ -264,7 +264,7 @@ function handleFileUpload(event) {
         };
         reader.readAsDataURL(file);
     }
-}
+  }
 
 // Create demo mode for when model fails to load
 function createDemoMode() {

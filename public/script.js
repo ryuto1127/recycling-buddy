@@ -169,6 +169,12 @@ async function initializeApp() {
   }
 }
 
+
+function renderEmptyPreview() {
+  webcamContainer.innerHTML = '<p id="preview-empty-message" class="text-sm text-gray-500">No photo selected yet.</p>';
+  detectBtn.disabled = true;
+}
+
 function handleFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -362,16 +368,19 @@ detectBtn.addEventListener('click', async () => {
 scanAnotherBtn.addEventListener('click', () => {
   currentImageData = null;
   fileInput.value = '';
+  renderEmptyPreview();
   showScreen('scanning-screen');
 });
 
 backToHomeBtn.addEventListener('click', () => {
   currentImageData = null;
   fileInput.value = '';
+  renderEmptyPreview();
   showScreen('landing-screen');
 });
 
 document.addEventListener('DOMContentLoaded', () => {
   initializeRegionSelector();
+  renderEmptyPreview();
   console.log('Smart Recycling Buddy initialized');
 });

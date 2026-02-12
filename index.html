@@ -148,16 +148,17 @@
                         </div>
 
                         <!-- Upload Section -->
-                        <div class="mb-6">
-                            <label for="file-input" class="block w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg text-center cursor-pointer transition-colors shadow-md">
+                        <div class="mb-3">
+                            <label for="file-input" class="relative block w-full rounded-lg border border-blue-200 bg-blue-600 px-6 py-3 text-center font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-400 cursor-pointer">
                                 Upload photo
                                 <input type="file" id="file-input" class="file-input" accept="image/*">
                             </label>
+                            <p class="mt-2 text-xs text-gray-500">Choose one clear photo of a single item.</p>
                         </div>
 
                         <!-- Detect Button -->
-                        <button id="detect-btn" class="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold py-4 px-6 rounded-lg text-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg">
-                            🔍 Detect Waste Type
+                        <button id="detect-btn" disabled class="w-full rounded-lg bg-emerald-600 px-6 py-4 text-lg font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-600">
+                            Detect waste type
                         </button>
 
                         <!-- Loading State -->

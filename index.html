@@ -29,11 +29,7 @@
         }
         
         .file-input {
-            position: absolute;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
+            display: none;
         }
         
         .loading-spinner {
@@ -149,10 +145,10 @@
 
                         <!-- Upload Section -->
                         <div class="mb-3">
-                            <label for="file-input" class="relative block w-full rounded-lg border border-blue-200 bg-blue-600 px-6 py-3 text-center font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-400 cursor-pointer">
+                            <button id="upload-photo-btn" type="button" class="w-full rounded-lg border border-blue-200 bg-blue-600 px-6 py-3 text-center font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
                                 Upload photo
-                                <input type="file" id="file-input" class="file-input" accept="image/*">
-                            </label>
+                            </button>
+                            <input type="file" id="file-input" class="file-input" accept="image/*">
                             <p class="mt-2 text-xs text-gray-500">Choose one clear photo of a single item.</p>
                         </div>
 

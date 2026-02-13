@@ -101,6 +101,7 @@ const startScanningBtn = document.getElementById('start-scanning-btn');
 const backBtn = document.getElementById('back-btn');
 const detectBtn = document.getElementById('detect-btn');
 const fileInput = document.getElementById('file-input');
+const uploadPhotoBtn = document.getElementById('upload-photo-btn');
 const webcamContainer = document.getElementById('webcam-container');
 const detectingState = document.getElementById('detecting-state');
 const predictionResults = document.getElementById('prediction-results');
@@ -340,6 +341,11 @@ startScanningBtn.addEventListener('click', async () => {
 
 backBtn.addEventListener('click', () => showScreen('landing-screen'));
 backToScanBtn.addEventListener('click', () => showScreen('scanning-screen'));
+
+uploadPhotoBtn.addEventListener('click', () => {
+  fileInput.click();
+});
+
 fileInput.addEventListener('change', handleFileUpload);
 
 regionSelect.addEventListener('change', (event) => {

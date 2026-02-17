@@ -1,129 +1,99 @@
-// Bin mapping data
-const binMapping = {
-  "aluminum_food_cans": {
-    bin: "Blue Bin ♻️",
-    tip: "Rinse aluminum cans before recycling to avoid contamination."
-  },
-  "aluminum_soda_cans": {
-    bin: "Blue Bin ♻️",
-    tip: "Rinse aluminum cans before recycling to avoid contamination."
-  },
-  "cardboard_boxes": {
-    bin: "Blue Bin ♻️",
-    tip: "Flatten boxes and keep them dry to recycle efficiently."
-  },
-  "cardboard_packaging": {
-    bin: "Blue (clean) ♻️ / Green (soiled) 🥬",
-    tip: "Clean cardboard goes in Blue Bin. Food-soiled cardboard (like pizza boxes) goes in Green Bin."
-  },
-  "glass_beverage_bottles": {
-    bin: "Blue Bin ♻️",
-    tip: "Rinse glass containers before recycling."
-  },
-  "glass_cosmetic_containers": {
-    bin: "Blue Bin ♻️",
-    tip: "Rinse glass containers before recycling."
-  },
-  "glass_food_jars": {
-    bin: "Blue Bin ♻️",
-    tip: "Rinse glass containers before recycling."
-  },
-  "magazines": {
-    bin: "Blue Bin ♻️",
-    tip: "Paper is highly recyclable—keep it clean and dry."
-  },
-  "newspaper": {
-    bin: "Blue Bin ♻️",
-    tip: "Paper is highly recyclable—keep it clean and dry."
-  },
-  "office_paper": {
-    bin: "Blue Bin ♻️",
-    tip: "Paper is highly recyclable—keep it clean and dry."
-  },
-  "paper_cups": {
-    bin: "Black Bin 🗑️",
-    tip: "Paper cups are lined with plastic—non-recyclable."
-  },
-  "plastic_cup_lids": {
-    bin: "Black Bin 🗑️",
-    tip: "Small pieces are hard to sort."
-  },
-  "plastic_detergent_bottles": {
-    bin: "Blue Bin ♻️",
-    tip: "Rinse out containers to reduce contamination."
-  },
-  "plastic_food_containers": {
-    bin: "Blue (clean) ♻️ / Black (dirty) 🗑️",
-    tip: "Clean containers can be recycled in Blue Bin. Contaminated ones go to Black Bin garbage."
-  },
-  "plastic_soda_bottles": {
-    bin: "Blue Bin ♻️",
-    tip: "Rinse out containers to reduce contamination."
-  },
-  "plastic_water_bottles": {
-    bin: "Blue Bin ♻️",
-    tip: "Rinse out containers to reduce contamination."
-  },
-  "steel_food_cans": {
-    bin: "Blue Bin ♻️",
-    tip: "Steel cans are 100% recyclable—rinse them before binning."
-  },
-  "coffee_grounds": {
-    bin: "Green Bin 🥬",
-    tip: "Compost coffee grounds and filters—they enrich soil!"
-  },
-  "tea_bags": {
-    bin: "Green Bin 🥬",
-    tip: "Tea bags are compostable and great for your garden."
-  },
-  "eggshells": {
-    bin: "Green Bin 🥬",
-    tip: "Eggshells are great for compost—nutrients for your garden."
-  },
-  "food_waste": {
-    bin: "Green Bin 🥬",
-    tip: "All food scraps including meat, bones, and dairy go in Green Bin. Banned from garbage since 2015."
-  },
-  "aerosol_cans": {
-    bin: "Blue Bin ♻️",
-    tip: "Empty completely before disposing."
-  },
-  "clothing": {
-    bin: "Black Bin 🗑️ (or donate 👕)",
-    tip: "Clothes aren't recyclable curbside—consider donating."
-  },
-  "disposable_plastic_cutlery": {
-    bin: "Black Bin 🗑️",
-    tip: "Most plastic cutlery isn't recyclable—try reusable utensils instead!"
-  },
-  "plastic_trash_bags": {
-    bin: "Black Bin 🗑️",
-    tip: "Plastic bags clog recycling machinery—dispose in garbage."
-  },
-  "plastic_straws": {
-    bin: "Black Bin 🗑️",
-    tip: "Plastic straws are not recyclable—consider reusable alternatives."
-  },
-  "shoes": {
-    bin: "Black Bin 🗑️ (or donate 👟)",
-    tip: "Shoes aren't recyclable curbside—donate if wearable."
-  },
-  "styrofoam_cups": {
-    bin: "Black Bin 🗑️",
-    tip: "Styrofoam is not recyclable—consider using reusable containers."
-  },
-  "styrofoam_food_containers": {
-    bin: "Black Bin 🗑️",
-    tip: "Styrofoam is not recyclable—consider using reusable containers."
-  }
+const SUPPORTED_REGION = 'metro-vancouver-new-westminster';
+const REGION_STORAGE_KEY = 'recycling-buddy-region';
+const EVENT_STORAGE_KEY = 'recycling-buddy-events';
+
+const REGION_LABELS = {
+  [SUPPORTED_REGION]: 'Metro Vancouver / New Westminster',
 };
 
-// Global variables
-let model, webcam, maxPredictions;
-let currentImageData = null;
-let isModelLoaded = false;
+const CATEGORY_LABELS = {
+  'plastic-container': 'Plastic container',
+  'metal-can': 'Metal can',
+  'paper-cardboard': 'Paper / cardboard',
+  glass: 'Glass',
+  'battery-ewaste': 'Battery / e-waste',
+  organics: 'Organics',
+  garbage: 'Garbage',
+};
 
-// DOM elements
+const classToCategory = {
+  aluminum_food_cans: 'metal-can',
+  aluminum_soda_cans: 'metal-can',
+  cardboard_boxes: 'paper-cardboard',
+  cardboard_packaging: 'paper-cardboard',
+  glass_beverage_bottles: 'glass',
+  glass_cosmetic_containers: 'glass',
+  glass_food_jars: 'glass',
+  magazines: 'paper-cardboard',
+  newspaper: 'paper-cardboard',
+  office_paper: 'paper-cardboard',
+  paper_cups: 'garbage',
+  plastic_cup_lids: 'garbage',
+  plastic_detergent_bottles: 'plastic-container',
+  plastic_food_containers: 'plastic-container',
+  plastic_soda_bottles: 'plastic-container',
+  plastic_water_bottles: 'plastic-container',
+  steel_food_cans: 'metal-can',
+  coffee_grounds: 'organics',
+  tea_bags: 'organics',
+  eggshells: 'organics',
+  food_waste: 'organics',
+  aerosol_cans: 'metal-can',
+  clothing: 'garbage',
+  disposable_plastic_cutlery: 'garbage',
+  plastic_trash_bags: 'garbage',
+  plastic_straws: 'garbage',
+  shoes: 'garbage',
+  styrofoam_cups: 'garbage',
+  styrofoam_food_containers: 'garbage',
+};
+
+const rules = {
+  [SUPPORTED_REGION]: {
+    'plastic-container': {
+      binLabel: 'Recycling (Containers)',
+      instructions: ['Empty and rinse container.', 'Keep lids attached when possible.'],
+      officialLink: 'https://recyclebc.ca/where-can-i-recycle/',
+    },
+    'metal-can': {
+      binLabel: 'Recycling (Containers)',
+      instructions: ['Rinse food residue.', 'Crush only if accepted locally.'],
+      officialLink: 'https://recyclebc.ca/where-can-i-recycle/',
+    },
+    'paper-cardboard': {
+      binLabel: 'Mixed Paper / Blue Box',
+      instructions: ['Keep paper clean and dry.', 'Flatten cardboard.'],
+      officialLink: 'https://recyclebc.ca/where-can-i-recycle/',
+    },
+    glass: {
+      binLabel: 'Glass Collection / Depot',
+      instructions: ['Rinse glass containers.', 'No ceramics or window glass.'],
+      officialLink: 'https://recyclebc.ca/where-can-i-recycle/',
+    },
+    'battery-ewaste': {
+      binLabel: 'Drop-off Depot (Special Waste)',
+      instructions: ['Do not place in curbside bins.', 'Tape battery terminals before drop-off.'],
+      officialLink: 'https://recyclebc.ca/where-can-i-recycle/',
+    },
+    organics: {
+      binLabel: 'Green Bin (Organics)',
+      instructions: ['Use compostable liner where accepted.', 'No plastic packaging.'],
+      officialLink: 'https://recyclebc.ca/where-can-i-recycle/',
+    },
+    garbage: {
+      binLabel: 'Garbage',
+      instructions: ['Bag securely.', 'Use only if not accepted elsewhere.'],
+      officialLink: 'https://recyclebc.ca/where-can-i-recycle/',
+    },
+  },
+};
+
+let model;
+let isModelLoaded = false;
+let currentImageData = null;
+let activeRegion = localStorage.getItem(REGION_STORAGE_KEY) || SUPPORTED_REGION;
+let manualFallbackUsed = false;
+
 const landingScreen = document.getElementById('landing-screen');
 const scanningScreen = document.getElementById('scanning-screen');
 const resultScreen = document.getElementById('result-screen');
@@ -131,8 +101,8 @@ const startScanningBtn = document.getElementById('start-scanning-btn');
 const backBtn = document.getElementById('back-btn');
 const detectBtn = document.getElementById('detect-btn');
 const fileInput = document.getElementById('file-input');
+const uploadPhotoBtn = document.getElementById('upload-photo-btn');
 const webcamContainer = document.getElementById('webcam-container');
-const webcamPlaceholder = document.getElementById('webcam-placeholder');
 const detectingState = document.getElementById('detecting-state');
 const predictionResults = document.getElementById('prediction-results');
 const binRecommendation = document.getElementById('bin-recommendation');
@@ -140,370 +110,283 @@ const ecoTip = document.getElementById('eco-tip');
 const scanAnotherBtn = document.getElementById('scan-another-btn');
 const backToHomeBtn = document.getElementById('back-to-home-btn');
 const backToScanBtn = document.getElementById('back-to-scan-btn');
+const regionSelect = document.getElementById('region-select');
 
-// Screen management
+function logEvent(name, payload = {}) {
+  const event = { name, payload, timestamp: new Date().toISOString() };
+  console.info('[analytics]', event);
+
+  try {
+    const existing = JSON.parse(localStorage.getItem(EVENT_STORAGE_KEY) || '[]');
+    existing.push(event);
+    localStorage.setItem(EVENT_STORAGE_KEY, JSON.stringify(existing.slice(-100)));
+  } catch (error) {
+    console.warn('Failed to store event', error);
+  }
+
+  fetch('/events', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(event),
+  }).catch(() => {});
+}
+
 function showScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
-    });
-    document.getElementById(screenId).classList.add('active');
+  document.querySelectorAll('.screen').forEach((screen) => screen.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
 }
 
-// Initialize the app
+function getConfidenceState(p1) {
+  if (p1 >= 0.75) return 'CONFIDENT';
+  if (p1 >= 0.45) return 'UNCERTAIN';
+  return 'UNKNOWN';
+}
+
+function getRecommendation(region, category, confidenceState) {
+  const base = rules[region][category];
+  if (confidenceState === 'CONFIDENT') return base;
+
+  return {
+    ...base,
+    instructions: ['Low confidence result: verify item before disposal.', ...base.instructions],
+  };
+}
+
+function initializeRegionSelector() {
+  regionSelect.innerHTML = Object.entries(REGION_LABELS)
+    .map(([value, label]) => `<option value="${value}">${label}</option>`)
+    .join('');
+  regionSelect.value = activeRegion;
+}
+
 async function initializeApp() {
-    try {
-        // Load the model from Teachable Machine
-        const URL = "https://teachablemachine.withgoogle.com/models/QFClfelrW/";
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
-        
-        model = await tmImage.load(modelURL, metadataURL);
-        maxPredictions = model.getTotalClasses();
-        isModelLoaded = true;
-        
-        console.log('Model loaded successfully');
-        console.log('Number of classes:', maxPredictions);
-        
-        // Setup webcam
-        //await setupWebcam();
-        
-    } catch (error) {
-        console.error('Error loading model:', error);
-        // Show error message and enable demo mode
-        webcamPlaceholder.innerHTML = `
-            <div class="text-center">
-                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <p class="text-red-600 font-medium">Model loading error</p>
-                <p class="text-sm text-gray-500 mt-2">Please check your internet connection and try again</p>
-            </div>
-        `;
-        // Enable demo mode as fallback
-        createDemoMode();
-    }
-}
-
-// Setup webcam
-/*async function setupWebcam() {
-    try {
-        const flip = true;
-        webcam = new tmImage.Webcam(300, 300, flip);
-        await webcam.setup();
-        await webcam.play();
-        
-        // Remove placeholder and add webcam canvas
-        webcamPlaceholder.style.display = 'none';
-        webcamContainer.appendChild(webcam.canvas);
-        
-        // Start the webcam loop
-        window.requestAnimationFrame(loop);
-        
-        // Enable detect button
-        detectBtn.disabled = false;
-        
-    } catch (error) {
-        console.error('Error setting up webcam:', error);
-        webcamPlaceholder.innerHTML = `
-            <div class="text-center">
-                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
-                </div>
-                <p class="text-yellow-600 font-medium">Camera not available</p>
-                <p class="text-sm text-gray-500 mt-2">Please use photo upload instead</p>
-            </div>
-        `;
-    }
-}
-
-// Webcam loop
-async function loop() {
-    if (webcam) {
-        webcam.update();
-        window.requestAnimationFrame(loop);
-    }
-}
-*/
-// Handle file upload
-function handleFileUpload(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                // Create canvas and draw image
-                const canvas = document.createElement('canvas');
-                canvas.width = 300;
-                canvas.height = 300;
-                const ctx = canvas.getContext('2d');
-                
-                // Clear canvas
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw image centered and scaled
-                const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
-                const x = (canvas.width / 2) - (img.width / 2) * scale;
-                const y = (canvas.height / 2) - (img.height / 2) * scale;
-                ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-                
-                // Replace webcam view with uploaded image
-                webcamContainer.innerHTML = '';
-                webcamContainer.appendChild(canvas);
-                currentImageData = canvas;
-                
-                // Enable detect button
-                detectBtn.disabled = false;
-            };
-            img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
-  }
-
-// Create demo mode for when model fails to load
-function createDemoMode() {
+  initializeRegionSelector();
+  try {
+    const URL = 'https://teachablemachine.withgoogle.com/models/QFClfelrW/';
+    model = await tmImage.load(`${URL}model.json`, `${URL}metadata.json`);
+    isModelLoaded = true;
+  } catch {
     isModelLoaded = false;
-    maxPredictions = Object.keys(binMapping).length;
-    
-    // Enable detect button for demo
-    detectBtn.disabled = false;
-}
-
-// Get demo prediction (fallback when model doesn't load)
-function getDemoPrediction() {
-    const demoClasses = Object.keys(binMapping);
-    const randomClass = demoClasses[Math.floor(Math.random() * demoClasses.length)];
-    
-    return [{
-        className: randomClass,
-        probability: 0.85 + Math.random() * 0.15
-    }];
-}
-
-// Run prediction
-async function runPrediction() {
-    try {
-        let imageElement;
-        
-        if (currentImageData) {
-            // Use uploaded image
-            imageElement = currentImageData;
-        } else if (webcam && webcam.canvas) {
-            // Use webcam
-            imageElement = webcam.canvas;
-        } else {
-            throw new Error('No image available for prediction');
-        }
-        
-        let predictions;
-        
-        if (isModelLoaded && model) {
-            // Use real model
-            predictions = await model.predict(imageElement);
-        } else {
-            // Use demo predictions
-            predictions = getDemoPrediction();
-        }
-        
-        // Sort predictions by probability
-        predictions.sort((a, b) => b.probability - a.probability);
-        
-        return predictions;
-        
-    } catch (error) {
-        console.error('Error running prediction:', error);
-        // Return demo prediction as fallback
-        return getDemoPrediction();
-    }
-}
-
-// Display results
-function displayResults(predictions) {
-    // Clear previous results
-    predictionResults.innerHTML = '';
-    binRecommendation.innerHTML = '';
-    ecoTip.innerHTML = '';
-    
-    // Display top predictions
-    const topPredictions = predictions.slice(0, 3);
-    topPredictions.forEach(prediction => {
-        const confidence = (prediction.probability * 100).toFixed(1);
-        const predictionDiv = document.createElement('div');
-        predictionDiv.className = 'flex justify-between items-center';
-        predictionDiv.innerHTML = `
-            <span class="font-medium text-gray-800">${prediction.className.replace(/_/g, ' ')}</span>
-            <span class="text-sm text-gray-600">${confidence}%</span>
-        `;
-        
-        // Add confidence bar
-        const barDiv = document.createElement('div');
-        barDiv.className = 'prediction-bar';
-        barDiv.innerHTML = `<div class="prediction-fill" style="width: ${confidence}%"></div>`;
-        
-        const containerDiv = document.createElement('div');
-        containerDiv.appendChild(predictionDiv);
-        containerDiv.appendChild(barDiv);
-        
-        predictionResults.appendChild(containerDiv);
-    });
-    
-    // 空白をアンダースコアに置き換えてキーを作成
-    const topPrediction = predictions[0];
-    const key = topPrediction.className.replace(/\s+/g, '_');
-    // もし大文字小文字にブレがあるなら .toLowerCase() も追加すると安全です
-    // const key = topPrediction.className.toLowerCase().replace(/\s+/g, '_');
-
-    const binInfo = binMapping[key];
-
-    
-    if (binInfo) {
-        // Display bin recommendation
-        const binClass = getBinClass(binInfo.bin);
-        binRecommendation.innerHTML = `
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">🗂️ Bin Recommendation</h3>
-            <div class="bin-badge ${binClass}">
-                ${binInfo.bin}
-            </div>
-            <p class="text-gray-600">Place this item in the <strong>${binInfo.bin}</strong> for proper disposal.</p>
-        `;
-        
-        // Display eco tip
-        ecoTip.innerHTML = `
-            <h3 class="text-lg font-semibold text-green-800 mb-4">💡 Eco Tip</h3>
-            <p class="text-green-700">${binInfo.tip}</p>
-        `;
-    } else {
-        // Fallback for unknown items
-        binRecommendation.innerHTML = `
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">🗂️ Bin Recommendation</h3>
-            <div class="bin-badge bin-garbage">
-                Garbage 🗑️
-            </div>
-            <p class="text-gray-600">When in doubt, place this item in the <strong>Garbage 🗑️</strong>.</p>
-        `;
-        
-        ecoTip.innerHTML = `
-            <h3 class="text-lg font-semibold text-green-800 mb-4">💡 Eco Tip</h3>
-            <p class="text-green-700">When unsure about recycling, it's better to throw items in the garbage than to contaminate the recycling stream.</p>
-        `;
-    }
-}
-
-// Get CSS class for bin type
-function getBinClass(binText) {
-    if (binText.includes('Blue')) return 'bin-blue';
-    if (binText.includes('Green')) return 'bin-green';
-  if (binText.includes('Black')) return 'bin-garbage';
-    return 'bin-mixed';
-}
-
-// Get clear bin color text
-function getBinColorText(binText) {
-    if (binText.includes('Blue')) return 'Blue Recycling Bin';
-    if (binText.includes('Green')) return 'Green Compost Bin';
-    if (binText.includes('Garbage')) return 'Black/Gray Garbage Bin';
-    if (binText.includes('Blue') && binText.includes('Green')) return 'Blue Bin (if clean) or Green Bin (if soiled)';
-    return 'Appropriate Bin';
-}
-
-// Get border class for bin type
-function getBorderClass(binText) {
-    if (binText.includes('Blue')) return 'border-blue-500';
-    if (binText.includes('Green')) return 'border-green-500';
-    if (binText.includes('Garbage')) return 'border-gray-500';
-    return 'border-purple-500';
-}
-
-// Get detailed bin instructions
-function getDetailedBinInstructions(binText) {
-    if (binText.includes('Blue') && binText.includes('Green')) {
-    return 'If the item is clean and dry, use the Blue Bin (Recycling). If it\'s food-soiled, use the Green Bin (Organics).';
   }
-  if (binText.includes('Blue') && binText.includes('Black')) {
-    return 'If the item is clean, use the Blue Bin (Recycling). If it\'s dirty or contaminated, use the Black Bin (Garbage).';
-    }
-    if (binText.includes('Blue')) {
-    return 'Place this recyclable item in your Blue Bin. Managed by Recycle BC and collected curbside. Make sure it\'s clean and dry.';
-    }
-    if (binText.includes('Green')) {
-    return 'This organic waste belongs in your Green Bin where it will be composted. Food scraps and yard waste have been banned from garbage since 2015.';
-    }
-  if (binText.includes('Black')) {
-        if (binText.includes('donate')) {
-      return 'This item goes in the Black Bin (garbage), but consider donating if it\'s still in good condition.';
-        }
-    return 'Place this item in your Black Bin for proper disposal.';
-    }
-    return 'Follow your local waste management guidelines for this item.';
 }
-// Event listeners
-startScanningBtn.addEventListener('click', () => {
-    showScreen('scanning-screen');
-    initializeApp();
+
+
+function renderEmptyPreview() {
+  webcamContainer.innerHTML = '<p id="preview-empty-message" class="text-sm text-gray-500">No photo selected yet.</p>';
+  detectBtn.disabled = true;
+}
+
+function handleFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  logEvent('image_selected', { source: 'upload', region: activeRegion });
+
+  const reader = new FileReader();
+  reader.onload = function onLoad(e) {
+    const img = new Image();
+    img.onload = function onImageLoad() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 300;
+      canvas.height = 300;
+      const ctx = canvas.getContext('2d');
+      const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+      const x = canvas.width / 2 - (img.width / 2) * scale;
+      const y = canvas.height / 2 - (img.height / 2) * scale;
+      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+      webcamContainer.innerHTML = '';
+      webcamContainer.appendChild(canvas);
+      currentImageData = canvas;
+      detectBtn.disabled = false;
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function getDemoPrediction() {
+  const labels = Object.keys(classToCategory);
+  const top = labels[Math.floor(Math.random() * labels.length)];
+  const p1 = Number((0.2 + Math.random() * 0.75).toFixed(2));
+  const p2 = Number((Math.random() * (1 - p1) * 0.8).toFixed(2));
+  const p3 = Number((Math.max(0.01, 1 - p1 - p2)).toFixed(2));
+
+  return [
+    { className: top, probability: p1 },
+    { className: labels[Math.floor(Math.random() * labels.length)], probability: p2 },
+    { className: labels[Math.floor(Math.random() * labels.length)], probability: p3 },
+  ];
+}
+
+async function runPrediction() {
+  if (!currentImageData) throw new Error('No image');
+  if (!isModelLoaded || !model) return getDemoPrediction();
+
+  const predictions = await model.predict(currentImageData);
+  predictions.sort((a, b) => b.probability - a.probability);
+  return predictions;
+}
+
+function renderManualCategoryPicker(confidenceState, officialLink) {
+  const buttons = Object.entries(CATEGORY_LABELS)
+    .map(
+      ([value, label]) =>
+        `<button class="manual-category-btn border border-gray-300 rounded px-3 py-2 text-sm hover:bg-gray-50" data-category="${value}">${label}</button>`
+    )
+    .join('');
+
+  const title = confidenceState === 'UNKNOWN'
+    ? 'I can’t reliably classify this item.'
+    : 'Low confidence prediction. Please confirm manually.';
+
+  return `
+    <div class="border border-amber-300 bg-amber-50 rounded-lg p-4">
+      <p class="font-semibold text-amber-900 mb-2">${title}</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">${buttons}</div>
+      <a href="${officialLink}" target="_blank" rel="noreferrer" class="text-blue-700 underline text-sm">Check official guide</a>
+    </div>
+  `;
+}
+
+function displayTop3(predictions) {
+  predictionResults.innerHTML = '';
+  predictions.slice(0, 3).forEach((prediction) => {
+    const confidence = (prediction.probability * 100).toFixed(1);
+    const category = classToCategory[prediction.className] || 'garbage';
+    predictionResults.innerHTML += `
+      <div class="mb-2">
+        <div class="flex justify-between text-sm"><span>${CATEGORY_LABELS[category]}</span><span>${confidence}%</span></div>
+        <div class="prediction-bar"><div class="prediction-fill" style="width:${confidence}%"></div></div>
+      </div>
+    `;
+  });
+}
+
+function attachManualFallbackHandlers(confidenceState, officialLink) {
+  document.querySelectorAll('.manual-category-btn').forEach((button) => {
+    button.addEventListener('click', () => {
+      const category = button.dataset.category;
+      const recommendation = getRecommendation(activeRegion, category, confidenceState);
+      manualFallbackUsed = true;
+      renderRecommendation(recommendation, category, confidenceState, officialLink);
+      logEvent('manual_fallback_used', {
+        manual_fallback_used: true,
+        category,
+        region: activeRegion,
+      });
+    });
+  });
+}
+
+function renderRecommendation(recommendation, category, confidenceState, officialLink) {
+  binRecommendation.innerHTML = `
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">🗂️ Bin Recommendation</h3>
+    <div class="bin-badge bin-mixed">${recommendation.binLabel}</div>
+    <p class="text-gray-700 mb-2">Category: <strong>${CATEGORY_LABELS[category]}</strong></p>
+    <ul class="list-disc pl-5 text-sm text-gray-700 mb-3">
+      ${recommendation.instructions.map((instruction) => `<li>${instruction}</li>`).join('')}
+    </ul>
+    <a href="${officialLink}" target="_blank" rel="noreferrer" class="text-blue-700 underline text-sm">Official guidance</a>
+  `;
+
+  ecoTip.innerHTML = confidenceState === 'CONFIDENT'
+    ? '<h3 class="text-lg font-semibold text-green-800 mb-2">✅ High confidence</h3><p class="text-green-700">Prediction confidence is strong.</p>'
+    : '<h3 class="text-lg font-semibold text-amber-800 mb-2">⚠️ Needs confirmation</h3><p class="text-amber-700">This recommendation requires your confirmation.</p>';
+}
+
+function displayResults(predictions) {
+  manualFallbackUsed = false;
+  const top = predictions[0];
+  const topCategory = classToCategory[top.className] || 'garbage';
+  const confidenceState = getConfidenceState(top.probability);
+  const officialLink = rules[activeRegion].garbage.officialLink;
+
+  displayTop3(predictions);
+
+  logEvent('prediction_completed', {
+    region: activeRegion,
+    top1_label: topCategory,
+    top1_prob: top.probability,
+    top3: predictions.slice(0, 3).map((p) => ({ label: classToCategory[p.className] || 'garbage', probability: p.probability })),
+  });
+
+  logEvent('result_state', {
+    result_state: confidenceState,
+    region: activeRegion,
+    top1_label: topCategory,
+    top1_prob: top.probability,
+    top3: predictions.slice(0, 3).map((p) => ({ label: classToCategory[p.className] || 'garbage', probability: p.probability })),
+    manual_fallback_used: manualFallbackUsed,
+  });
+
+  if (confidenceState === 'CONFIDENT') {
+    const recommendation = getRecommendation(activeRegion, topCategory, confidenceState);
+    renderRecommendation(recommendation, topCategory, confidenceState, officialLink);
+    return;
+  }
+
+  binRecommendation.innerHTML = renderManualCategoryPicker(confidenceState, officialLink);
+  ecoTip.innerHTML = `
+    <h3 class="text-lg font-semibold text-amber-800 mb-2">⚠️ Low confidence</h3>
+    <p class="text-amber-700">Top result confidence: ${(top.probability * 100).toFixed(1)}%. Please use manual category selection.</p>
+  `;
+  attachManualFallbackHandlers(confidenceState, officialLink);
+}
+
+startScanningBtn.addEventListener('click', async () => {
+  showScreen('scanning-screen');
+  logEvent('scan_started', { region: activeRegion });
+  await initializeApp();
 });
 
-backBtn.addEventListener('click', () => {
-    showScreen('landing-screen');
-});
+backBtn.addEventListener('click', () => showScreen('landing-screen'));
+backToScanBtn.addEventListener('click', () => showScreen('scanning-screen'));
 
-backToScanBtn.addEventListener('click', () => {
-    showScreen('scanning-screen');
+uploadPhotoBtn.addEventListener('click', () => {
+  fileInput.click();
 });
 
 fileInput.addEventListener('change', handleFileUpload);
 
+regionSelect.addEventListener('change', (event) => {
+  activeRegion = event.target.value;
+  localStorage.setItem(REGION_STORAGE_KEY, activeRegion);
+  logEvent('region_changed', { region: activeRegion });
+});
+
 detectBtn.addEventListener('click', async () => {
-    // Show loading state
-    detectBtn.style.display = 'none';
-    detectingState.classList.remove('hidden');
-    
-    try {
-        // Run prediction
-        const predictions = await runPrediction();
-        
-        // Display results
-        displayResults(predictions);
-        
-        // Show results screen
-        showScreen('result-screen');
-        
-    } catch (error) {
-        console.error('Error during detection:', error);
-        alert('Detection failed. Please try again.');
-    } finally {
-        // Hide loading state
-        detectBtn.style.display = 'block';
-        detectingState.classList.add('hidden');
-    }
+  detectBtn.style.display = 'none';
+  detectingState.classList.remove('hidden');
+
+  try {
+    const predictions = await runPrediction();
+    displayResults(predictions);
+    showScreen('result-screen');
+  } catch (error) {
+    console.error(error);
+    alert('Detection failed. Please try again.');
+  } finally {
+    detectBtn.style.display = 'block';
+    detectingState.classList.add('hidden');
+  }
 });
 
 scanAnotherBtn.addEventListener('click', () => {
-    // Reset current image
-    currentImageData = null;
-    
-    // Reset file input
-    fileInput.value = '';
-    
-    // Go back to scanning screen
-    showScreen('scanning-screen');
+  currentImageData = null;
+  fileInput.value = '';
+  renderEmptyPreview();
+  showScreen('scanning-screen');
 });
 
 backToHomeBtn.addEventListener('click', () => {
-    // Reset everything
-    currentImageData = null;
-    fileInput.value = '';
-    
-    // Go back to landing screen
-    showScreen('landing-screen');
+  currentImageData = null;
+  fileInput.value = '';
+  renderEmptyPreview();
+  showScreen('landing-screen');
 });
 
-// Initialize app when page loads
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Smart Recycling Buddy initialized');
+  initializeRegionSelector();
+  renderEmptyPreview();
+  console.log('Smart Recycling Buddy initialized');
 });
